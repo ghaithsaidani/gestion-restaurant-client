@@ -1,0 +1,36 @@
+@use "sass:map";
+
+$blue: (
+        100: rgba(54, 122, 255, 0.1),
+        200: rgba(54, 122, 255, 0.2),
+        300: rgba(54, 122, 255, 0.3),
+        400: rgba(54, 122, 255, 0.4),
+        500: rgba(54, 122, 255, 0.5),
+        600: rgba(54, 122, 255, 0.6),
+        700: rgba(54, 122, 255, 0.7),
+        800: rgba(54, 122, 255, 0.8),
+        900: rgba(54, 122, 255, 0.9),
+        1000: rgb(54, 122, 255),
+);
+
+$dark: #101418;
+$light: #fff;
+$grey: (
+        500: #969696,
+        1000: #232E35
+);
+
+
+
+
+:export {
+  @each $key, $value in $blue {
+    #{quote('blue'+$key)}: $value;
+  }
+  @each $key, $value in $grey {
+    #{quote('grey'+$key)}: $value;
+  }
+  dark: $dark;
+  light: $light;
+
+}

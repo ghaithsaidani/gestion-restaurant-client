@@ -7,7 +7,7 @@
 
     form {
       display: flex;
-      width: 40%;
+      width: 450px;
       flex-direction: column;
       a {
         color: map.get(colors.$blue, 1000) ;
@@ -39,7 +39,7 @@
   }
 
   .right-box {
-    width: 45%;
+    width: 40%;
     padding: 0.5%;
 
     img {

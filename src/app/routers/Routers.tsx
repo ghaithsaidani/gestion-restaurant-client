@@ -1,5 +1,5 @@
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
-import {ForgotPassword, Login, Register} from "../pages";
+import {Dashboard, ForgotPassword, Login, Register} from "../pages";
 
 const Routers = () => (
     <BrowserRouter>
@@ -11,6 +11,7 @@ const Routers = () => (
                 <Route path="register" element={<Register/>}/>
                 <Route path="forgot-password" element={<ForgotPassword/>}/>
             </Route>
+            <Route path={"dashboard"} element={<Dashboard/>}/>
         </Routes>
     </BrowserRouter>
 );

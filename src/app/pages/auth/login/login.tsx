@@ -10,13 +10,31 @@ import {useFormik} from "formik";
 import {InputFieldModel} from "../../../shared/input-field.model";
 import {InputField} from "../../../components";
 import {LoadingButton} from "@mui/lab";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {BpCheckbox} from "../../../components/checkbox/Bpcheckbox";
 import {changeTheme} from "../../../redux/features/theme.slice";
+import AuthService from "../../../services/auth.service";
+import TokenStorageService from "../../../services/token-storage.service";
+import {useMutation} from '@tanstack/react-query';
 
 
 const Login = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    //const [rememberMe, setRememberMe] = useState(false);
+    const mutation = useMutation({
+        mutationFn: (data: LoginFormModel) =>
+            AuthService.Login(data.email, data.password).then((response) => {
+
+                TokenStorageService.saveToken(response.data.jwt);
+                navigate("/dashboard")
+            }).catch((error) => {
+                if (error.response) {
+                    setFieldError("email", error.response.data.message)
+                }
+            })
+
+    })
     const [showPassword, setShowPassword] = useState(false);
     const validationSchema = yup.object().shape({
         email: yup.string()
@@ -25,7 +43,7 @@ const Login = () => {
         password: yup.string()
             .required("you need to enter your password")
     })
-    const {values, handleSubmit, handleChange, setFieldError, errors, touched} = useFormik({
+    const {values,isValid, handleSubmit, handleChange, setFieldError, errors, touched} = useFormik({
         initialValues: {
             email: '',
             password: '',
@@ -34,7 +52,7 @@ const Login = () => {
         validateOnBlur: false,
         validationSchema: validationSchema,
         onSubmit: (values: LoginFormModel) => {
-            console.log(values)
+            mutation.mutate(values)
         }
     });
 
@@ -96,7 +114,7 @@ const Login = () => {
 
                         <Link to={"/auth/forgot-password"}>Forgot Password?</Link>
                     </div>
-                    <LoadingButton className={"sign-in-button"} type={"submit"} variant={"contained"}>Sign In</LoadingButton>
+                    <LoadingButton className={"sign-in-button"} type={"submit"} variant={"contained"} loading={mutation.isPending}>Sign In</LoadingButton>
                     <Typography variant={"body1"} className={"create-account"}>Need an account? <Link to={"/auth/register"}>Create one</Link></Typography>
                 </form>
             </Stack>

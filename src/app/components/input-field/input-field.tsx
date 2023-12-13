@@ -23,7 +23,7 @@ export const InputField = (props: InputFieldModel) => {
                         onClick={props.handleShowPassword}
                         edge="end"
                     >
-                        {props.showPassword ? <VisibilityOffOutlined/> : <VisibilityOutlined/>}
+                        {props.showPassword ? <VisibilityOutlined/> : <VisibilityOffOutlined/>}
                     </IconButton>
                 </InputAdornment>
             }/>

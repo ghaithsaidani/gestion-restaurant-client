@@ -1,6 +1,6 @@
 import './Login.modules.scss'
 import {useDispatch} from "react-redux";
-import {useCallback, useState} from "react";
+import {useCallback,useState} from "react";
 
 import {Box, FormControlLabel, Stack, Typography} from "@mui/material";
 import {LoginImage} from "../../../../assets/images";
@@ -17,8 +17,10 @@ import AuthService from "../../../services/auth.service";
 import TokenStorageService from "../../../services/token-storage.service";
 import {useMutation} from '@tanstack/react-query';
 
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
+    
     const dispatch = useDispatch();
     const navigate = useNavigate();
     //const [rememberMe, setRememberMe] = useState(false);
@@ -90,8 +92,6 @@ const Login = () => {
             }
         }
     ]
-
-
     return (
         <Box display={"flex"} height={"100vh"} className={"login-box"}>
             <Stack className={"login-form"} justifyContent={"center"} alignItems={"center"}>
@@ -122,6 +122,7 @@ const Login = () => {
                 <img src={LoginImage} alt={"Login"}/>
             </Box>
         </Box>
+        
     );
 };
 

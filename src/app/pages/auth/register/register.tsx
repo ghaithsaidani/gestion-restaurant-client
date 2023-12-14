@@ -3,15 +3,38 @@ import {
     HorizontalLinearStepper,
     StepProps
 } from "../../../components/horizontal-linear-stepper/horizontal-linear-stepper";
-import {useState} from "react";
+import React, {useState} from "react";
 import * as yup from "yup";
 import {useFormik} from "formik";
+import {Box, Stack, Typography} from "@mui/material";
+import {AuthImage} from "../../../../assets/images";
+import {Link, useNavigate} from "react-router-dom";
+import {useMutation} from "@tanstack/react-query";
+import AuthService from "../../../services/auth.service";
+import {User} from "../../../shared/user.model";
+import {useDispatch} from "react-redux";
+import {changeToast} from "../../../redux/features/toast.slice";
+import {ToastModel} from "../../../shared/toast.model";
 
 
 const Register = () => {
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const mutation = useMutation({
+        mutationFn: (data: User) =>
+            AuthService.Register(data).then((response) => {
+                //TokenStorageService.saveToken(response.data.jwt);
+                navigate("/auth/login")
+            }).catch((error) => {
+                if (error.response) {
+                    console.log(error.response.data.message)
+                    //setFieldError("email", error.response.data.message)
+                }
+            })
+    })
     const step1 = useFormik({
         initialValues: {
             firstName: '',
@@ -22,12 +45,13 @@ const Register = () => {
         validateOnMount: true,
         validationSchema: yup.object().shape({
             firstName: yup.string()
-                .required("you need to enter your first Name"),
+                .required("vous pouvez entrer votre nom"),
             lastName: yup.string()
-                .required("you need to enter your last Name")
+                .required("vous pouvez entrer votre prénom")
         }),
         onSubmit: () => {
-            console.log(step2.values)
+            //createdUser.Nom=step1.values.firstName
+            //createdUser.Prenom=step1.values.lastName
         }
     });
 
@@ -42,34 +66,52 @@ const Register = () => {
         validateOnMount: true,
         validationSchema: yup.object().shape({
             email: yup.string()
-                .email("invalid email")
+                .email("email incorrecte")
                 .required("you need to enter your email"),
             address: yup.string()
-                .required("you need to enter your address"),
+                .required("vous puvez entrer votre adresse"),
             phone: yup.string()
-                .required("you need to enter your phone"),
+                .required("vous puvez entrer votre numero de telephone")
         }),
         onSubmit: () => {
-            console.log(step2.values)
+            //createdUser.Email=step2.values.email
+            //createdUser.Adresse=step2.values.address
+            //createdUser.Telephone=step2.values.phone
         }
     });
 
-
+    const [created, setCreated] = useState(false);
     const step3 = useFormik({
         initialValues: {
             password: '',
-            confirmPassword: '',
+            confirm_password: '',
         },
         validateOnChange: true,
         validateOnBlur: false,
         validateOnMount: true,
         validationSchema: yup.object().shape({
             password: yup.string()
-                .required("you need to enter your password"),
-            confirmPassword: yup.string().required("you need to enter your password")
+                .required("vous pouvez entrer votre mot de passe"),
+            confirm_password: yup.string()
+                .required("vous pouvez confirmer votre mot de passe")
         }),
+
         onSubmit: () => {
-            console.log(step3.values)
+            const createdUser:User={
+                nom:step1.values.firstName,
+                prenom:step1.values.lastName,
+                email:step2.values.email,
+                adresse:step2.values.address,
+                telephone:step2.values.phone,
+                password:step3.values.password
+            }
+            //mutation.mutate(createdUser)
+            //setCreated(true)
+            const toast = {exist:true, message:"Votre compte a été créé avec succès", type:"success"}
+            dispatch(toast)
+            navigate("/auth/login")
+
+            //navigate("/auth/login")
         }
     });
 
@@ -81,13 +123,13 @@ const Register = () => {
     }
     const steps: StepProps[] = [
         {
-            label: 'ya3tek 3asba 1',
+            label: 'Informations personnelles',
             inputs: [
                 {
                     id: "firstName",
                     label: "Nom",
                     type: "text",
-                    placeholder: "3asba",
+                    placeholder: "abc",
                     value: step1.values.firstName,
                     handleChange: step1.handleChange,
                     error: {
@@ -100,7 +142,7 @@ const Register = () => {
                     id: "lastName",
                     label: "Prénom",
                     type: "text",
-                    placeholder: "3asba2",
+                    placeholder: "abc",
                     value: step1.values.lastName,
                     handleChange: step1.handleChange,
                     error: {
@@ -112,16 +154,16 @@ const Register = () => {
 
             ],
             handleSubmit: step1.handleSubmit,
-            completed:step1.isValid
+            completed: step1.isValid
         },
         {
-            label: 'ya3tek 3asba 2',
+            label: 'Informations de contact',
             inputs: [
                 {
                     id: "email",
                     label: "Email",
                     type: "email",
-                    placeholder: "3asba@3asba.com",
+                    placeholder: "abc@abc.com",
                     value: step2.values.email,
                     handleChange: step2.handleChange,
                     error: {
@@ -134,7 +176,7 @@ const Register = () => {
                     id: "address",
                     label: "Adresse",
                     type: "text",
-                    placeholder: "enter your address",
+                    placeholder: "abc, abc",
                     value: step2.values.address,
                     handleChange: step2.handleChange,
                     error: {
@@ -147,7 +189,7 @@ const Register = () => {
                     id: "phone",
                     label: "Numéro de telephone",
                     type: "text",
-                    placeholder: "entrer votre numéro de telephone",
+                    placeholder: "00 000 000",
                     value: step2.values.phone,
                     handleChange: step2.handleChange,
                     error: {
@@ -158,10 +200,10 @@ const Register = () => {
                 }
             ],
             handleSubmit: step2.handleSubmit,
-            completed:step2.isValid
+            completed: step2.isValid
         },
         {
-            label: 'Create',
+            label: "Securité",
             inputs: [
                 {
                     id: "password",
@@ -180,27 +222,47 @@ const Register = () => {
                 },
                 {
                     id: "confirm_password",
-                    label: "Mot de Passe",
+                    label: "Confirmer Mot de Passe",
                     type: showConfirmPassword ? "text" : "password",
                     placeholder: "*******",
-                    value: step3.values.password,
+                    value: step3.values.confirm_password,
                     handleChange: step3.handleChange,
                     handleShowPassword: handleClickShowConfirmPassword,
-                    showPassword: showPassword,
+                    showPassword: showConfirmPassword,
                     error: {
-                        condition: step3.touched.password && Boolean(step3.errors.password),
-                        messageCondition: step3.touched.password && step3.errors.password,
-                        message: step3.errors.password
+                        condition: step3.touched.confirm_password && Boolean(step3.errors.confirm_password),
+                        messageCondition: step3.touched.confirm_password && step3.errors.confirm_password,
+                        message: step3.errors.confirm_password
                     }
                 }
             ],
             handleSubmit: step3.handleSubmit,
-            completed:step3.isValid
+            completed: step3.isValid
         }
     ]
-    //console.log(isValid)
+
     return (
-        <HorizontalLinearStepper steps={steps}/>
+        <Box display={"flex"} height={"100vh"} className={"register-box"}>
+            <Box className={"left-box"}>
+                <img src={AuthImage} alt={"auth"}/>
+            </Box>
+            <Stack className={"right-box"} justifyContent={"center"} alignItems={"center"}>
+                <Stack className={"register-form"}>
+                    <div className={"headline"}>
+                        <Typography variant={"h2"}>Sign Up</Typography>
+                        <Typography variant={"body1"}>Please create an account to continue.</Typography>
+                    </div>
+                    <HorizontalLinearStepper steps={steps} isPending={mutation.isPending}/>
+                    <Typography variant={"body1"} className={"login-account"}>Already have an account? <Link
+                        to={"/auth/login"} onClick={()=> {
+                        const toast = {exist: true, message: "Votre compte a été créé avec succès", type: "success"}
+                        dispatch(changeToast(toast))
+                    }}>Sign In</Link></Typography>
+                </Stack>
+            </Stack>
+
+        </Box>
+
     );
 };
 

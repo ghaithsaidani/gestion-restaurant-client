@@ -1,1 +1,1 @@
-export {default as LoginImage} from './login.jpg'
+export {default as AuthImage} from './Auth.jpg'

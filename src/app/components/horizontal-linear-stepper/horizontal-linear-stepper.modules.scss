@@ -1,0 +1,19 @@
+/*
+ * Replace this with your own classes
+ *
+ * e.g.
+ * .container {
+ * }
+*/
+
+.stepper-box{
+  display: grid;
+  place-items: center;
+  form{
+    margin-top: 50px;
+    width: 450px;
+    .form-inputs{
+      height: 270px;
+    }
+  }
+}

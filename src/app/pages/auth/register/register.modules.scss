@@ -1,0 +1,50 @@
+@use "sass:map";
+@use "../../../../assets/scss-variables/colors.module" as colors;
+
+
+.register-box {
+  .left-box {
+    width: 40%;
+    padding: 0.5%;
+    z-index: 2;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      animation: ease-in-out 1.5s slideInFromRight;
+    }
+  }
+  .right-box{
+    width: 60%;
+    opacity: 1;
+    animation:  ease-in-out 1.5s show-animation;
+    .register-form {
+
+      .headline {
+        margin-bottom: 50px;
+        p {
+          margin-top: 5px;
+        }
+      }
+      .login-account{
+        margin-top: 100px;
+        text-align: center;
+        a{
+            color: map.get(colors.$blue, 1000);
+        }
+      }
+    }
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(140%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+

@@ -1,19 +1,22 @@
-
-import {FormEvent, Fragment, useEffect, useState} from "react";
+import './horizontal-linear-stepper.modules.scss'
+import React, {FormEvent, Fragment, ReactNode, useEffect, useState} from "react";
 import {Box, Button, Step, StepLabel, Stepper, Typography} from "@mui/material";
 import {InputFieldModel} from "../../shared/input-field.model";
 import {InputField} from "../input-field/input-field";
+import {LoadingButton} from "@mui/lab";
 
 /* eslint-disable-next-line */
 export interface StepProps {
     label: string;
     inputs: InputFieldModel[]
     handleSubmit:()=>void
-    completed:boolean ;
+    completed:boolean;
+
 }
 
 export interface HorizontalLinearStepperProps {
     steps: StepProps[];
+    isPending?:boolean
     //activeStep: number;
     //skipped:Set<number>
 }
@@ -34,9 +37,10 @@ export function HorizontalLinearStepper(props: HorizontalLinearStepperProps) {
     }, [activeStep, props.steps])
     const handleNext = (e:FormEvent) => {
         const step=props.steps[activeStep]
+        //console.log(step.handleSubmit)
         e.preventDefault()
         step.handleSubmit()
-        if(completed){
+        if(completed && activeStep !== props.steps.length - 1){
             let newSkipped = skipped;
             if (isStepSkipped(activeStep)) {
                 newSkipped = new Set(newSkipped.values());
@@ -52,12 +56,12 @@ export function HorizontalLinearStepper(props: HorizontalLinearStepperProps) {
         setActiveStep(0);
     };
     return (
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: '600px' }} className={"stepper-box"}>
             <Stepper activeStep={activeStep}>
                 {props.steps.map((step, index) => {
                     const stepProps: { completed?: boolean } = {};
                     const labelProps: {
-                        optional?: React.ReactNode;
+                        optional?: ReactNode;
                     } = {};
                     return (
                         <Step key={step.label} {...stepProps}>
@@ -66,23 +70,15 @@ export function HorizontalLinearStepper(props: HorizontalLinearStepperProps) {
                     );
                 })}
             </Stepper>
-            {activeStep === props.steps.length ? (
-                <Fragment>
-                    <Typography sx={{ mt: 2, mb: 1 }}>
-                        All steps completed - you&apos;re finished
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                        <Box sx={{ flex: '1 1 auto' }} />
-                        <Button onClick={handleReset}>Reset</Button>
-                    </Box>
-                </Fragment>
-            ) : (
+
                 <Fragment>
                     {/*<Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>*/}
-                    <form noValidate onSubmit={handleNext}>
-                        {props.steps[activeStep].inputs.map((input) => (
-                            <InputField key={input.id} {...input}/>
-                        ))}
+                    <form onSubmit={handleNext}>
+                        <Box className={"form-inputs"}>
+                            {props.steps[activeStep].inputs.map((input) => (
+                                <InputField key={input.id} {...input}/>
+                            ))}
+                        </Box>
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                             <Button
                                 color="inherit"
@@ -90,18 +86,21 @@ export function HorizontalLinearStepper(props: HorizontalLinearStepperProps) {
                                 onClick={handleBack}
                                 sx={{ mr: 1 }}
                             >
-                                Back
+                                Retourner
                             </Button>
                             <Box sx={{ flex: '1 1 auto' }} />
 
-                            <Button type={"submit"}>
-                                {activeStep === props.steps.length - 1 ? 'Finish' : 'Next'}
-                            </Button>
+                            {activeStep!==props.steps.length-1 ? <Button type={"submit"}>
+                                Suivant
+                            </Button>:
+                                <LoadingButton className={"sign-up-button"} type={"submit"} variant={"contained"}
+                                               loading={props.isPending}>Sign In</LoadingButton>
+                            }
                         </Box>
                     </form>
 
                 </Fragment>
-            )}
+
         </Box>
     );
 }

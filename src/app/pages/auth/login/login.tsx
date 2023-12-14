@@ -1,31 +1,41 @@
 import './Login.modules.scss'
-import {useDispatch} from "react-redux";
-import {useCallback, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import React, {useCallback, useEffect, useState} from "react";
 
 import {Box, FormControlLabel, Stack, Typography} from "@mui/material";
-import {LoginImage} from "../../../../assets/images";
+import {AuthImage} from "../../../../assets/images";
 import * as yup from "yup";
 import {LoginFormModel} from "../../../shared/login-form.model";
 import {useFormik} from "formik";
 import {InputFieldModel} from "../../../shared/input-field.model";
 import {InputField} from "../../../components";
 import {LoadingButton} from "@mui/lab";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import {BpCheckbox} from "../../../components/checkbox/Bpcheckbox";
 import {changeTheme} from "../../../redux/features/theme.slice";
 import AuthService from "../../../services/auth.service";
 import TokenStorageService from "../../../services/token-storage.service";
 import {useMutation} from '@tanstack/react-query';
+import {ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import {toastValue} from "../../../redux/features/toast.slice";
+import {ToastModel} from "../../../shared/toast.model";
+import {Toast} from "react-toastify/dist/types";
 
 
 const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation()
+    const myToast = useSelector(toastValue)
+    /*const notify = () => toast(myToast.message, {
+        type: myToast.type,
+        position: myToast.position,
+    })*/
     //const [rememberMe, setRememberMe] = useState(false);
     const mutation = useMutation({
         mutationFn: (data: LoginFormModel) =>
             AuthService.Login(data.email, data.password).then((response) => {
-
                 TokenStorageService.saveToken(response.data.jwt);
                 navigate("/dashboard")
             }).catch((error) => {
@@ -33,8 +43,9 @@ const Login = () => {
                     setFieldError("email", error.response.data.message)
                 }
             })
-
     })
+
+
     const [showPassword, setShowPassword] = useState(false);
     const validationSchema = yup.object().shape({
         email: yup.string()
@@ -43,7 +54,7 @@ const Login = () => {
         password: yup.string()
             .required("you need to enter your password")
     })
-    const {values,isValid, handleSubmit, handleChange, setFieldError, errors, touched} = useFormik({
+    const {values, handleSubmit, handleChange, setFieldError, errors, touched} = useFormik({
         initialValues: {
             email: '',
             password: '',
@@ -95,7 +106,6 @@ const Login = () => {
     return (
         <Box display={"flex"} height={"100vh"} className={"login-box"}>
             <Stack className={"login-form"} justifyContent={"center"} alignItems={"center"}>
-
                 <form noValidate onSubmit={handleSubmit}>
                     <div className={"headline"}>
                         <Typography variant={"h2"}>Sign In</Typography>
@@ -114,13 +124,17 @@ const Login = () => {
 
                         <Link to={"/auth/forgot-password"}>Forgot Password?</Link>
                     </div>
-                    <LoadingButton className={"sign-in-button"} type={"submit"} variant={"contained"} loading={mutation.isPending}>Sign In</LoadingButton>
-                    <Typography variant={"body1"} className={"create-account"}>Need an account? <Link to={"/auth/register"}>Create one</Link></Typography>
+                    <LoadingButton className={"sign-in-button"} type={"submit"} variant={"contained"}
+                                   loading={mutation.isPending}>Sign In</LoadingButton>
+                    <Typography variant={"body1"} className={"create-account"}>Need an account? <Link
+                        to={"/auth/register"}>Create one</Link></Typography>
                 </form>
             </Stack>
+
             <Box className={"right-box"}>
-                <img src={LoginImage} alt={"Login"}/>
+                <img src={AuthImage} alt={"Login"}/>
             </Box>
+            {location.state && <ToastContainer/>}
         </Box>
     );
 };

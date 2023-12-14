@@ -1,28 +1,28 @@
 import axios from "axios";
+import {User} from "../shared/user.model";
 
-export interface LoginResponse{
-    jwt:string
+export interface LoginResponse {
+    jwt: string
 }
 
-class AuthService{
+class AuthService {
+    Config=axios.create({
+        baseURL: import.meta.env.VITE_BASE_URL,
+        headers: {
+            "Content-type": "application/json",
+        }
+    });
     baseUrl = import.meta.env.VITE_BASE_URL;
-    Login(email:string, password:string) {
-        return axios.post(this.baseUrl + "Admin/login", { email, password })
-            /*.then((response) => {
-                console.log(response.data)
-                /!*if (response.data.accessToken) {
-                    localStorage.setItem("user", JSON.stringify(response.data));
-                }
-                return response.data;*!/
-            });*/
+    Login = (email: string, password: string) => {
+        return this.Config.post(this.baseUrl + "admin/login", {email, password})
     }
-
+    Register = (user: User) => {
+        return this.Config.post(this.baseUrl + "admin/register", user);
+    }
     /*logout: () => {
         localStorage.removeItem("user");
     },
-    register: (username, email, password) => {
-        return axios.post(API_URL + "signup", { username, email, password });
-    },
+
     getCurrentUser: () => {
         return JSON.parse(localStorage.getItem("user"));
     },

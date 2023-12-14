@@ -3,5 +3,4 @@ class TokenStorageService{
         sessionStorage.setItem("accessToken",token)
     }
 }
-
 export default new TokenStorageService();

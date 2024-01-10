@@ -7,7 +7,7 @@ import {useFormik} from "formik";
 import {InputFieldModel} from "../../../shared/input-field.model";
 import {InputField} from "../../../components";
 import {LoadingButton} from "@mui/lab";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, Navigate, useNavigate} from "react-router-dom";
 import AuthService from "../../../services/auth.service";
 import {useMutation} from '@tanstack/react-query';
 import { ChangePasswordFormModel } from 'src/app/shared/changePassword-form.models';
@@ -91,7 +91,9 @@ const ChangePassword = () => {
 
     ]
 
-
+    if(AuthService.isAuth()){
+        return <Navigate to={"/dashboard"} replace={true}/>
+     }
     return (
         <Box display={"flex"} height={"100vh"} className={"login-box"}>
             <Stack className={"login-form"} justifyContent={"center"} alignItems={"center"}>

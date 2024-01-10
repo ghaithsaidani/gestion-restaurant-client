@@ -6,7 +6,8 @@ import {
 import {useState} from "react";
 import * as yup from "yup";
 import {useFormik} from "formik";
-
+import AuthService from "../../../services/auth.service";
+import { Navigate } from 'react-router-dom';
 
 const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -199,6 +200,9 @@ const Register = () => {
         }
     ]
     //console.log(isValid)
+    if(AuthService.isAuth()){
+        return <Navigate to={"/dashboard"} replace={true}/>
+     }
     return (
         <HorizontalLinearStepper steps={steps}/>
     );

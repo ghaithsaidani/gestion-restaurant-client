@@ -10,7 +10,7 @@ import {useFormik} from "formik";
 import {InputFieldModel} from "../../../shared/input-field.model";
 import {InputField} from "../../../components";
 import {LoadingButton} from "@mui/lab";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, Navigate, useNavigate} from "react-router-dom";
 import {BpCheckbox} from "../../../components/checkbox/Bpcheckbox";
 import {changeTheme} from "../../../redux/features/theme.slice";
 import AuthService from "../../../services/auth.service";
@@ -27,12 +27,13 @@ const Login = () => {
     const mutation = useMutation({
         mutationFn: (data: LoginFormModel) =>
             AuthService.Login(data.email, data.password).then((response) => {
-
-                TokenStorageService.saveToken(response.data.jwt);
+                AuthService.InjectCookie("_connected_user",response.data.nom.toUpperCase())
                 navigate("/dashboard")
             }).catch((error) => {
                 if (error.response) {
                     setFieldError("email", error.response.data.message)
+                    console.log(error);
+                    
                 }
             })
 
@@ -92,8 +93,14 @@ const Login = () => {
             }
         }
     ]
+    if(AuthService.isAuth()){
+       return <Navigate to={"/dashboard"} replace={true}/>
+    }
+
     return (
+        
         <Box display={"flex"} height={"100vh"} className={"login-box"}>
+            
             <Stack className={"login-form"} justifyContent={"center"} alignItems={"center"}>
 
                 <form noValidate onSubmit={handleSubmit}>

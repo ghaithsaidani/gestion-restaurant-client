@@ -17,7 +17,7 @@ export function App() {
                     <Routers/>
                 </Theme>
             </Provider>
-            <ReactQueryDevtools initialIsOpen={true} />
+            { /*<ReactQueryDevtools initialIsOpen={true} /> */}
         </QueryClientProvider>
     );
 }

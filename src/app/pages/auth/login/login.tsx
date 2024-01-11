@@ -1,47 +1,52 @@
 import './Login.modules.scss'
-import {useDispatch, useSelector} from "react-redux";
-import React, {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
+
 
 import {Box, FormControlLabel, Stack, Typography} from "@mui/material";
 import {AuthImage} from "../../../../assets/images";
 import * as yup from "yup";
-import {LoginFormModel} from "../../../shared/login-form.model";
+import {LoginFormModel} from "../../../public/shared/login-form.model";
 import {useFormik} from "formik";
-import {InputFieldModel} from "../../../shared/input-field.model";
-import {InputField} from "../../../components";
+import {InputFieldModel} from "../../../public/shared/input-field.model";
+import {InputField} from "../../../public/components";
 import {LoadingButton} from "@mui/lab";
-import {Link, useLocation, useNavigate} from "react-router-dom";
-import {BpCheckbox} from "../../../components/checkbox/Bpcheckbox";
+import {Link, useNavigate} from "react-router-dom";
+import {BpCheckbox} from "../../../public/components/checkbox/Bpcheckbox";
 import {changeTheme} from "../../../redux/features/theme.slice";
 import AuthService from "../../../services/auth.service";
 import TokenStorageService from "../../../services/token-storage.service";
 import {useMutation} from '@tanstack/react-query';
-import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {toastValue} from "../../../redux/features/toast.slice";
-import {ToastModel} from "../../../shared/toast.model";
-import {Toast} from "react-toastify/dist/types";
+import {changeToast, reinitializeToast, toastValue} from "../../../redux/features/toast.slice";
+import 'react-toastify/dist/ReactToastify.css';
+import {useDispatch, useSelector} from "react-redux";
+import {ToastModel} from "../../../public/shared/toast.model";
+import {ToastifyHelper} from "../../../public/helpers/toastifyHelper";
+import {ToastContainer} from "react-toastify";
 
 
 const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const location = useLocation()
-    const myToast = useSelector(toastValue)
-    /*const notify = () => toast(myToast.message, {
-        type: myToast.type,
-        position: myToast.position,
-    })*/
+    const myToast:ToastModel = useSelector(toastValue)
+
+    useEffect(() => {
+        ToastifyHelper.initializeToastify(myToast)
+        dispatch(reinitializeToast())
+    }, [dispatch,myToast]);
+
     //const [rememberMe, setRememberMe] = useState(false);
     const mutation = useMutation({
         mutationFn: (data: LoginFormModel) =>
             AuthService.Login(data.email, data.password).then((response) => {
                 TokenStorageService.saveToken(response.data.jwt);
+                dispatch(changeToast({
+                    exist: true,
+                    type: "success",
+                    message: "Login Success"}))
                 navigate("/dashboard")
             }).catch((error) => {
-                if (error.response) {
-                    setFieldError("email", error.response.data.message)
-                }
+                setFieldError("password", "Invalid email or password")
             })
     })
 
@@ -101,8 +106,6 @@ const Login = () => {
             }
         }
     ]
-
-
     return (
         <Box display={"flex"} height={"100vh"} className={"login-box"}>
             <Stack className={"login-form"} justifyContent={"center"} alignItems={"center"}>
@@ -134,8 +137,9 @@ const Login = () => {
             <Box className={"right-box"}>
                 <img src={AuthImage} alt={"Login"}/>
             </Box>
-            {location.state && <ToastContainer/>}
+            <ToastContainer/>
         </Box>
+
     );
 };
 

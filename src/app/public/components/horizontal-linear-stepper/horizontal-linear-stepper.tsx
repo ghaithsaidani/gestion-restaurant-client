@@ -1,6 +1,6 @@
 import './horizontal-linear-stepper.modules.scss'
 import React, {FormEvent, Fragment, ReactNode, useEffect, useState} from "react";
-import {Box, Button, Step, StepLabel, Stepper, Typography} from "@mui/material";
+import {Box, Button, Step, StepLabel, Stepper} from "@mui/material";
 import {InputFieldModel} from "../../shared/input-field.model";
 import {InputField} from "../input-field/input-field";
 import {LoadingButton} from "@mui/lab";

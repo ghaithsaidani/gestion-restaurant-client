@@ -2,7 +2,7 @@ import './register.modules.scss'
 import {
     HorizontalLinearStepper,
     StepProps
-} from "../../../components/horizontal-linear-stepper/horizontal-linear-stepper";
+} from "../../../public/components/horizontal-linear-stepper/horizontal-linear-stepper";
 import React, {useState} from "react";
 import * as yup from "yup";
 import {useFormik} from "formik";
@@ -11,10 +11,9 @@ import {AuthImage} from "../../../../assets/images";
 import {Link, useNavigate} from "react-router-dom";
 import {useMutation} from "@tanstack/react-query";
 import AuthService from "../../../services/auth.service";
-import {User} from "../../../shared/user.model";
+import {User} from "../../../public/shared/user.model";
 import {useDispatch} from "react-redux";
 import {changeToast} from "../../../redux/features/toast.slice";
-import {ToastModel} from "../../../shared/toast.model";
 
 
 const Register = () => {
@@ -26,12 +25,12 @@ const Register = () => {
     const mutation = useMutation({
         mutationFn: (data: User) =>
             AuthService.Register(data).then((response) => {
-                //TokenStorageService.saveToken(response.data.jwt);
+                const toast = {exist: true, message: "your account is created successfully", type: "success"}
+                dispatch(changeToast(toast))
                 navigate("/auth/login")
             }).catch((error) => {
                 if (error.response) {
                     console.log(error.response.data.message)
-                    //setFieldError("email", error.response.data.message)
                 }
             })
     })
@@ -80,7 +79,6 @@ const Register = () => {
         }
     });
 
-    const [created, setCreated] = useState(false);
     const step3 = useFormik({
         initialValues: {
             password: '',
@@ -93,7 +91,7 @@ const Register = () => {
             password: yup.string()
                 .required("vous pouvez entrer votre mot de passe"),
             confirm_password: yup.string()
-                .required("vous pouvez confirmer votre mot de passe")
+                .required("vous pouvez confirmer votre mot de passe").oneOf([yup.ref("password")],"Password doesn't match")
         }),
 
         onSubmit: () => {
@@ -105,13 +103,7 @@ const Register = () => {
                 telephone:step2.values.phone,
                 password:step3.values.password
             }
-            //mutation.mutate(createdUser)
-            //setCreated(true)
-            const toast = {exist:true, message:"Votre compte a été créé avec succès", type:"success"}
-            dispatch(toast)
-            navigate("/auth/login")
-
-            //navigate("/auth/login")
+            mutation.mutate(createdUser)
         }
     });
 
@@ -254,10 +246,7 @@ const Register = () => {
                     </div>
                     <HorizontalLinearStepper steps={steps} isPending={mutation.isPending}/>
                     <Typography variant={"body1"} className={"login-account"}>Already have an account? <Link
-                        to={"/auth/login"} onClick={()=> {
-                        const toast = {exist: true, message: "Votre compte a été créé avec succès", type: "success"}
-                        dispatch(changeToast(toast))
-                    }}>Sign In</Link></Typography>
+                        to={"/auth/login"} onClick={()=>{}}>Sign In</Link></Typography>
                 </Stack>
             </Stack>
 

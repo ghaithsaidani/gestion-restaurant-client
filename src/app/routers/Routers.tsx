@@ -1,5 +1,6 @@
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import {Dashboard, ForgotPassword, Login, Register} from "../pages";
+import ChangePassword from "../pages/auth/change-password/change-password";
 
 const Routers = () => (
     <BrowserRouter>
@@ -10,6 +11,7 @@ const Routers = () => (
                 <Route path="login" element={<Login/>}/>
                 <Route path="register" element={<Register/>}/>
                 <Route path="forgot-password" element={<ForgotPassword/>}/>
+                <Route path="change-password" element={<ChangePassword/>}/>
             </Route>
             <Route path={"dashboard"} element={<Dashboard/>}/>
         </Routes>

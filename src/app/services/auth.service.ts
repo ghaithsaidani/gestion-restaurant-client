@@ -1,5 +1,5 @@
 import axios from "axios";
-import {User} from "../shared/user.model";
+import {User} from "../public/shared/user.model";
 
 export interface LoginResponse {
     jwt: string
@@ -19,6 +19,27 @@ class AuthService {
     Register = (user: User) => {
         return this.Config.post(this.baseUrl + "admin/register", user);
     }
+
+    ResetPassword(email:string)
+    {
+        return new Promise((res,rej)=>{
+            axios.post(`${this.baseUrl}admin/sendPassRecoveryLink`,{email}).then(response =>res(response.data)).catch(err=>rej(err))
+        })
+    }
+
+    ChangePassword(password:string)
+    {
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get("id")
+        return new Promise((res,rej)=>{
+            axios.put(`${this.baseUrl}admin/changePassword?id=${id}`,{password}).then(response =>res(response.data)).catch(err=>rej(err))
+        })
+    }
+          
+    
+    }
+    
+
     /*logout: () => {
         localStorage.removeItem("user");
     },
@@ -30,6 +51,5 @@ class AuthService {
         const user = JSON.parse(localStorage.getItem("user"));
         return user.accessToken;
     }*/
-}
 
 export default new AuthService();

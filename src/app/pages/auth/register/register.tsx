@@ -6,6 +6,7 @@ import {
 import React, {useState} from "react";
 import * as yup from "yup";
 import {useFormik} from "formik";
+import { Navigate } from 'react-router-dom';
 import {Box, Stack, Typography} from "@mui/material";
 import {AuthImage} from "../../../../assets/images";
 import {Link, useNavigate} from "react-router-dom";
@@ -232,7 +233,7 @@ const Register = () => {
             completed: step3.isValid
         }
     ]
-
+    //console.log(isValid)
     return (
         <Box display={"flex"} height={"100vh"} className={"register-box"}>
             <Box className={"left-box"}>

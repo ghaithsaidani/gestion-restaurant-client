@@ -10,7 +10,7 @@ import {useFormik} from "formik";
 import {InputFieldModel} from "../../../public/shared/input-field.model";
 import {InputField} from "../../../public/components";
 import {LoadingButton} from "@mui/lab";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, Navigate, useNavigate} from "react-router-dom";
 import {BpCheckbox} from "../../../public/components/checkbox/Bpcheckbox";
 import {changeTheme} from "../../../redux/features/theme.slice";
 import AuthService from "../../../services/auth.service";
@@ -39,14 +39,13 @@ const Login = () => {
     const mutation = useMutation({
         mutationFn: (data: LoginFormModel) =>
             AuthService.Login(data.email, data.password).then((response) => {
+
                 TokenStorageService.saveToken(response.data.jwt);
-                dispatch(changeToast({
-                    exist: true,
-                    type: "success",
-                    message: "Login Success"}))
                 navigate("/dashboard")
             }).catch((error) => {
-                setFieldError("password", "Invalid email or password")
+                if (error.response) {
+                    setFieldError("email", error.response.data.message)
+                }
             })
     })
 
@@ -106,8 +105,14 @@ const Login = () => {
             }
         }
     ]
+    if(AuthService.isAuth()){
+       return <Navigate to={"/dashboard"} replace={true}/>
+    }
+
     return (
+        
         <Box display={"flex"} height={"100vh"} className={"login-box"}>
+            
             <Stack className={"login-form"} justifyContent={"center"} alignItems={"center"}>
                 <form noValidate onSubmit={handleSubmit}>
                     <div className={"headline"}>
@@ -118,12 +123,12 @@ const Login = () => {
                         <InputField key={input.id} {...input}/>
                     ))}
                     <div className={"add-ons"}>
-                        <FormControlLabel control={<BpCheckbox onClick={useCallback(
+                        <FormControlLabel control={<BpCheckbox /* onClick={useCallback(
                             () => {
                                 dispatch(changeTheme())
                             },
                             [dispatch],
-                        )}/>} label={"Keep me logged in"}/>
+                        )} *//>} label={"Keep me logged in"}/>
 
                         <Link to={"/auth/forgot-password"}>Forgot Password?</Link>
                     </div>
